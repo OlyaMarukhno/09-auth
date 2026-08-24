@@ -1,4 +1,4 @@
-import css from "@/app/notes/filter/SidebarNotes.module.css";
+import css from './SidebarNotes.module.css';
 
 export default function SidebarLayout({
   children,
@@ -9,9 +9,8 @@ export default function SidebarLayout({
 }>) {
   return (
     <section className={css.container}>
-  <aside className={css.sidebar}>{sidebar}</aside>
-  <div className={css.notesWrapper}>{children}</div>
-</section>
-
+      <aside className={css.sidebar}>{sidebar}</aside>
+      <div className={css.notesWrapper}>{children}</div>
+    </section>
   );
 }

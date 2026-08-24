@@ -1,4 +1,4 @@
-import { FetchNotes } from '@/lib/api';
+import { fetchNotes as FetchNotes } from '@/lib/api/serverApi';
 import css from './App.module.css';
 import NotesClient from './Notes.client';
 import {

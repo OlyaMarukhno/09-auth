@@ -1,4 +1,4 @@
-import css from '@/app/notes/filter/@sidebar/sidebar.module.css';
+import css from './sidebar.module.css';
 import Link from 'next/link';
 
 export default function Sidebar() {
@@ -6,7 +6,6 @@ export default function Sidebar() {
 
   return (
     <ul className={css.menuList}>
-      {/* список тегів */}
       {tags.map(tag => {
         const hrefTag = tag === "All" ? "all" : tag;
         return (
