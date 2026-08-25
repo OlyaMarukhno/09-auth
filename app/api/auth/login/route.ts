@@ -17,24 +17,10 @@ export async function POST(req: NextRequest) {
       const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
       for (const cookieStr of cookieArray) {
         const parsed = parseSetCookie(cookieStr);
-        
-        // if (parsed.value) {
-        //   cookieStore.set(parsed.name, parsed.value, {
-           
-        //     httpOnly: parsed.httpOnly,
-        //     secure: parsed.secure,
-        //     path: parsed.path || '/',
-        //     maxAge: parsed.maxAge,
-        //     domain: parsed.domain,
-        //     expires: parsed.expires ? new Date(parsed.expires) : undefined,
-        //     sameSite: parsed.sameSite as 'strict' | 'lax' | 'none' | undefined,
-        //   });
-        // }
-
-      if (parsed.value) {
+  
+        if (parsed.value) {
         cookieStore.set(parsed.name, parsed.value, parsed);
        }
-
       } 
 
       return NextResponse.json(apiRes.data, { status: apiRes.status });

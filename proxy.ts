@@ -1,43 +1,3 @@
-// import { NextResponse } from 'next/server';
-// import type { NextRequest } from 'next/server';
-// import { checkSession } from './lib/api/serverApi';
-
-// const privateRoutes = ['/profile', '/notes'];
-// const publicRoutes = ['/sign-in', '/sign-up'];
-
-// export async function proxy(request: NextRequest) {
-//   const path = request.nextUrl.pathname;
-  
-//   const accessToken = request.cookies.get('accessToken')?.value;
-//   const refreshToken = request.cookies.get('refreshToken')?.value;
-
-//   const isPrivateRoute = privateRoutes.some((route) => path.startsWith(route));
-//   const isPublicRoute = publicRoutes.some((route) => path.startsWith(route));
-
-//   let isAuthenticated = !!accessToken;
-
-//   if (!accessToken && refreshToken) {
-//     const sessionRes = await checkSession();
-//     if (sessionRes && sessionRes.status === 200) {
-//       isAuthenticated = true;
-//     }
-//   }
-
-//   if (isPrivateRoute && !isAuthenticated) {
-//     return NextResponse.redirect(new URL('/sign-in', request.url));
-//   }
-
-//   if (isPublicRoute && isAuthenticated) {
-//     return NextResponse.redirect(new URL('/', request.url));
-//   }
-
-//   return NextResponse.next();
-// }
-
-// export const config = {
-//   matcher: ['/profile/:path*', '/notes/:path*', '/sign-in', '/sign-up'],
-// };
-
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
@@ -58,12 +18,14 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = publicRoutes.some((route) => path.startsWith(route));
 
   let isAuthenticated = !!accessToken;
+  let sessionUpdated = false;
 
   if (!accessToken && refreshToken) {
     try {
       const sessionRes = await checkSession();
       if (sessionRes && sessionRes.status === 200) {
         isAuthenticated = true;
+        sessionUpdated = true;
 
         const setCookieHeader = sessionRes.headers['set-cookie'];
         if (setCookieHeader) {
@@ -89,7 +51,15 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (sessionUpdated) {
+    const allCookies = cookieStore.getAll();
+    for (const cookie of allCookies) {
+      response.cookies.set(cookie.name, cookie.value);
+    }
+  }
+
+  return response;
 }
 
 export const config = {
