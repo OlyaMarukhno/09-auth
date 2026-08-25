@@ -3,6 +3,8 @@ import { api } from './api';
 import type { Note } from '@/types/note';
 import type { User } from '@/types/user';
 
+import { AxiosResponse } from 'axios';
+
 interface FetchNotesResponse {
   notes: Note[];
   totalPages: number;
@@ -41,7 +43,7 @@ export async function fetchNoteById(taskId: string): Promise<Note> {
   return response.data;
 }
 
-export async function checkSession(): Promise<User | null> {
+export async function checkSession(): Promise<AxiosResponse<User> | null> {
   const cookieStore = await cookies();
   try {
     const response = await api.get<User>('/auth/session', {
