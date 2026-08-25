@@ -14,8 +14,8 @@ export async function proxy(request: NextRequest) {
   const accessToken = cookieStore.get('accessToken')?.value;
   const refreshToken = cookieStore.get('refreshToken')?.value;
 
-  const isPrivateRoute = privateRoutes.some((route) => path.startsWith(route));
-  const isPublicRoute = publicRoutes.some((route) => path.startsWith(route));
+  const isPrivateRoute = privateRoutes.some((route) => path === route || path.startsWith(route + '/'));
+  const isPublicRoute = publicRoutes.some((route) => path === route || path.startsWith(route + '/'));
 
   let isAuthenticated = !!accessToken;
   const updatedCookies: { name: string; value: string; options: any }[] = [];
