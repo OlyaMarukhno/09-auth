@@ -49,7 +49,7 @@ export async function checkSession(): Promise<User | null> {
         Cookie: cookieStore.toString(),
       },
     });
-    return response.data;
+    return response;
   } catch {
     return null;
   }

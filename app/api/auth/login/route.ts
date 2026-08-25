@@ -19,23 +19,16 @@ export async function POST(req: NextRequest) {
         const parsed = parseSetCookie(cookieStr);
         
         if (parsed.value) {
-          // Сохраняем оригинальную куку от бэкенда
           cookieStore.set(parsed.name, parsed.value, {
+           
             httpOnly: parsed.httpOnly,
-            secure: false,
+            secure: parsed.secure,
             path: parsed.path || '/',
             maxAge: parsed.maxAge,
+            domain: parsed.domain,
+            expires: parsed.expires ? new Date(parsed.expires) : undefined,
+            sameSite: parsed.sameSite as 'strict' | 'lax' | 'none' | undefined,
           });
-
-          // Дублируем под именем 'token', чтобы serverApi и прокси успешно проходили проверку
-          if (parsed.name === 'refreshToken' || parsed.name.includes('token')) {
-            cookieStore.set('token', parsed.value, {
-              httpOnly: parsed.httpOnly,
-              secure: false,
-              path: '/',
-              maxAge: parsed.maxAge,
-            });
-          }
         }
       } 
 

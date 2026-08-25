@@ -22,9 +22,12 @@ export async function POST(req: NextRequest) {
         if (parsed.value) {
           cookieStore.set(parsed.name, parsed.value, {
             httpOnly: parsed.httpOnly,
-            secure: false,
+            secure: parsed.secure,
             path: parsed.path || '/',
             maxAge: parsed.maxAge,
+            domain: parsed.domain,
+            expires: parsed.expires ? new Date(parsed.expires) : undefined,
+            sameSite: parsed.sameSite as 'strict' | 'lax' | 'none' | undefined,
           });
         }
       }
