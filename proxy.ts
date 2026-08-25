@@ -18,14 +18,13 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = publicRoutes.some((route) => path.startsWith(route));
 
   let isAuthenticated = !!accessToken;
-  let sessionUpdated = false;
+  const updatedCookies: { name: string; value: string; options: any }[] = [];
 
   if (!accessToken && refreshToken) {
     try {
       const sessionRes = await checkSession();
       if (sessionRes && sessionRes.status === 200) {
         isAuthenticated = true;
-        sessionUpdated = true;
 
         const setCookieHeader = sessionRes.headers['set-cookie'];
         if (setCookieHeader) {
@@ -34,6 +33,11 @@ export async function proxy(request: NextRequest) {
             const parsed = parseSetCookie(cookieStr);
             if (parsed.value) {
               cookieStore.set(parsed.name, parsed.value, parsed);
+              updatedCookies.push({
+                name: parsed.name,
+                value: parsed.value,
+                options: parsed,
+              });
             }
           }
         }
@@ -52,11 +56,12 @@ export async function proxy(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  if (sessionUpdated) {
-    const allCookies = cookieStore.getAll();
-    for (const cookie of allCookies) {
-      response.cookies.set(cookie.name, cookie.value);
-    }
+  for (const cookie of updatedCookies) {
+    response.cookies.set({
+      name: cookie.name,
+      value: cookie.value,
+      ...cookie.options,
+    });
   }
 
   return response;
